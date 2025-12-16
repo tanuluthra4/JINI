@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚡ Jini (Voice Reactive)</title>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #020617 0%, #000 100%);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #00f5d4;
+      text-shadow: 0 0 15px #00f5d4;
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    .core {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 245, 212, 0.2) 20%, rgba(6, 182, 212, 0.05) 60%, transparent 100%);
+      box-shadow: 0 0 30px rgba(0, 245, 212, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top: 3px solid #00f5d4;
+      border-right: 3px solid #7c3aed;
+      border-radius: 50%;
+      animation: rotate 6s linear infinite;
+      opacity: 0.7;
+      filter: drop-shadow(0 0 20px #06b6d4);
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .wave {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #00f5d4 10%, #06b6d4 40%, transparent 70%);
+      box-shadow: 0 0 30px #00f5d4;
+      transform: scale(1);
+      transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+
+    button {
+      margin-top: 40px;
+      background: linear-gradient(90deg, #06b6d4, #7c3aed);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 0 0 25px rgba(124, 58, 237, 0.5);
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(6, 182, 212, 0.6);
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #9aa4b2;
+      text-align: center;
+      width: 80%;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎙️ Say Something</h1>
+  <div class="core">
+    <div class="ring"></div>
+    <div class="wave" id="wave"></div>
+  </div>
+  <button id="micBtn">🎧 Start Listening</button>
+  <button id="backBtn">🏠 Back</button>
+  <p id="status">Click to allow microphone access.</p>
+
+  <script type="text/javascript" src="/eel.js"></script>
+  <script>
+    const micBtn = document.getElementById('micBtn');
+    const backBtn = document.getElementById('backBtn');
+    const status = document.getElementById('status');
+    const wave = document.getElementById('wave');
+    let listening = false;
+
+    async function initMic() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        source = audioCtx.createMediaStreamSource(stream);
+        source.connect(analyser);
+        analyser.fftSize = 512;
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        animate();
+        status.textContent = "🎧 Listening — speak to see the core react!";
+      } catch (err) {
+        status.textContent = "Microphone access denied or not available.";
+        console.error(err);
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (!analyser) return;
+      analyser.getByteTimeDomainData(dataArray);
+      // Calculate average deviation (rough loudness)
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        let val = (dataArray[i] - 128) / 128;
+        sum += val * val;
+      }
+      let volume = Math.sqrt(sum / dataArray.length);
+      // Map volume (0–1) → scale 1–1.8
+      let scale = 1 + Math.min(volume * 8, 0.8);
+      wave.style.transform = `scale(${scale})`;
+      wave.style.opacity = 0.7 + Math.min(volume * 3, 0.3);
+    }
+
+    // Expose showResponse so Python can call it
+    eel.expose(showResponse);
+    function showResponse(reply) {
+      console.log("🤖 AI:", reply);
+      status.innerHTML = "JINI: " + reply;
+    }
+
+    micBtn.addEventListener("click", async () => {
+      if (!listening) {
+        status.textContent = "🎙️ Listening...";
+        micBtn.textContent = "🛑 Stop Listening";
+        micBtn.style.background = "linear-gradient(90deg, #ef4444, #b91c1c)";
+        initMic();
+        listening = true;
+
+        // Start backend mic input
+        try {
+          await eel.mic_input()();
+        } catch (error) {
+          console.error(error);
+          status.textContent = "⚠️ Couldn't access mic or backend error.";
+        }
+
+        // Reset after speaking
+        listening = false;
+        micBtn.textContent = "🎧 Start Listening";
+        micBtn.style.background = "linear-gradient(90deg, #06b6d4, #7c3aed)";
+      }
+    });
+
+    backBtn.addEventListener("click", () => {
+      window.close();
+    });
+
+    function goTo(page) {
+      if (typeof eel !== "undefined") {
+        eel.navigate_to(page)();
+      } else {
+        window.location.href = page;
+      }
+    }
+  </script>
+</body>
+
+</html>
