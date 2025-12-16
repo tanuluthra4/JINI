@@ -40,8 +40,8 @@ Flow:
 Voice Input
  → Speech-to-Text
  → Command Classification
-``` ├─ System Command → Local Execution
-    └─ General Query → Gemini AI ```
+```text ├─ System Command → Local Execution
+        └─ General Query → Gemini AI ```
 This separation ensures accuracy, security, and reliability in system control.
 
 ## Project Structure
