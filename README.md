@@ -40,12 +40,13 @@ Flow:
 Voice Input
  → Speech-to-Text
  → Command Classification
-    ├─ System Command → Local Execution
-    └─ General Query → Gemini AI
+''' ├─ System Command → Local Execution
+    └─ General Query → Gemini AI '''
 This separation ensures accuracy, security, and reliability in system control.
 
 # Project Structure
 
+'''
 JINI/
 │
 ├── backend/
@@ -65,6 +66,7 @@ JINI/
 ├── .env                  # Environment variables (not committed)
 ├── .gitignore
 └── README.md
+'''
 
 # Database Design
 
