@@ -114,7 +114,7 @@ It is planned to be enabled in future versions for hands-free interaction.
 ## Installation & Setup
 
 1. Clone Repository
-git clone https://github.com/your-username/JINI.git
+git clone https://github.com/tanuluthra4/JINI.git
 cd JINI
 
 2. Create Virtual Environment
