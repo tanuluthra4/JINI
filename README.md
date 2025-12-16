@@ -4,7 +4,7 @@ JINI is an AI-powered desktop assistant that combines voice-based system control
 The project is designed to perform real-time desktop operations such as opening applications, playing media, and handling system commands, while also supporting natural language interaction through a chatbot interface.
 The system follows a hybrid command + AI architecture, ensuring reliable execution of system-level actions without sacrificing conversational intelligence.
 
-# Key Features
+## Key Features
 
 🎤 Voice-controlled desktop commands
 💬 Text-based conversational chatbot
@@ -15,7 +15,7 @@ The system follows a hybrid command + AI architecture, ensuring reliable executi
 🌐 Web-based user interface
 🔐 Environment-based API key handling
 
-# System Architecture Overview
+## System Architecture Overview
 
 JINI uses two independent input pipelines, intentionally designed to handle different interaction types.
 
@@ -40,13 +40,13 @@ Flow:
 Voice Input
  → Speech-to-Text
  → Command Classification
-''' ├─ System Command → Local Execution
-    └─ General Query → Gemini AI '''
+``` ├─ System Command → Local Execution
+    └─ General Query → Gemini AI ```
 This separation ensures accuracy, security, and reliability in system control.
 
-# Project Structure
+## Project Structure
 
-'''
+```text
 JINI/
 │
 ├── backend/
@@ -66,9 +66,9 @@ JINI/
 ├── .env                  # Environment variables (not committed)
 ├── .gitignore
 └── README.md
-'''
+```
 
-# Database Design
+## Database Design
 
 The project uses SQLite for lightweight local storage.
 Tables
@@ -76,7 +76,7 @@ sys_command – Stores application names and executable paths/URLs
 contacts – Stores contact names and phone numbers
 Sensitive data is excluded from version control.
 
-# Technologies Used
+## Technologies Used
 
 1. Backend
 - Python
@@ -103,13 +103,13 @@ Sensitive data is excluded from version control.
 - YouTube automation
 - Text-to-Speech engine (SAPI5)
 
-### Wake Word Detection (Planned)
+## Wake Word Detection (Planned)
 
 The system includes preliminary implementation for wake-word detection using Picovoice Porcupine.
 This feature is currently disabled in the final build to avoid continuous microphone usage and system overhead.
 It is planned to be enabled in future versions for hands-free interaction.
 
-# Installation & Setup
+## Installation & Setup
 
 1. Clone Repository
 git clone https://github.com/your-username/JINI.git
@@ -131,7 +131,7 @@ ASSISTANT_NAME=JINI
 5. Run Application
 python main.py
 
-# Design Decisions
+## Design Decisions
 
 - Text and voice inputs are intentionally separated
 - Voice commands are classified before execution
@@ -141,14 +141,14 @@ python main.py
 
 These choices were made to ensure robustness, clarity, and system safety.
 
-# Limitations
+## Limitations
 
 - Platform dependent (Windows-based)
 - Requires internet for AI responses
 - Limited to predefined system commands
 - Voice recognition accuracy depends on environment noise
 
-# Future Enhancements
+## Future Enhancements
 
 - Cross-platform support
 - User authentication
@@ -157,12 +157,12 @@ These choices were made to ensure robustness, clarity, and system safety.
 - Enhanced NLP-based command classification
 - Cloud-based database synchronization
 
-# Academic Declaration
+## Academic Declaration
 
 This project is developed as part of the B.Tech Capstone Project under the Department of Computer Engineering,
 J.C. Bose University of Science & Technology, YMCA, Faridabad.
 
-# Author
+## Author
 
 Tanu Luthra
 B.Tech Computer Engineering
