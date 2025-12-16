@@ -6,14 +6,14 @@ The system follows a hybrid command + AI architecture, ensuring reliable executi
 
 ## Key Features
 
-🎤 Voice-controlled desktop commands
-💬 Text-based conversational chatbot
-🗣️ Text-to-speech responses
-🧠 AI-powered responses using Gemini API
-🖥️ Application launching and system automation
-📁 Local database for contacts and system commands
-🌐 Web-based user interface
-🔐 Environment-based API key handling
+- 🎤 Voice-controlled desktop commands
+- 💬 Text-based conversational chatbot
+- 🗣️ Text-to-speech responses
+- 🧠 AI-powered responses using Gemini API
+- 🖥️ Application launching and system automation
+- 📁 Local database for contacts and system commands
+- 🌐 Web-based user interface
+- 🔐 Environment-based API key handling
 
 ## System Architecture Overview
 
@@ -166,6 +166,6 @@ J.C. Bose University of Science & Technology, YMCA, Faridabad.
 
 ## Author
 
-Tanu Luthra
-B.Tech Computer Engineering
-J.C. Bose University of Science & Technology, YMCA
+Tanu Luthra  
+B.Tech Computer Engineering  
+J.C. Bose University of Science & Technology, YMCA  
