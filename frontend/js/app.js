@@ -18,6 +18,25 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ---------- conversation memory (client) ---------- */
     const memory = []; // list of {role:'user'|'assistant', text}
 
+    // ----- Conversation Persistence -----
+    const STORAGE_KEY = "jini_memory";
+
+    // Load conversation history from localStorage on page load
+    window.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const messages = JSON.parse(saved);
+            messages.forEach(msg => appendBubble(msg.text, msg.role));
+            memory.push(...messages);
+        }
+    });
+
+    // Save new messages to localStorage
+    function saveMemory() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(memory));
+    }
+
+
     /* ---------- helpers ---------- */
     function appendBubble(text, role) {
         const d = document.createElement("div");
@@ -81,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!t) return;
         appendBubble(t, "user");
         memory.push({ role: "user", text: t });
+        saveMemory();
         promptEl.value = "";
         statusEl.textContent = "Thinking...";
         processingSound.play();
@@ -89,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const reply = await askServer(t);
         appendBubble(reply, "assistant");
         memory.push({ role: "assistant", text: reply });
+        saveMemory();
         processingSound.pause();
         processingSound.currentTime = 0;
         speakAndAnimate(reply);
@@ -245,5 +266,13 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         window.location.href = page;
       }
+    }
+    const clearBtn = document.getElementById("clearMemory");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            localStorage.removeItem(STORAGE_KEY);
+            memory.length = 0;
+            historyEl.innerHTML = "";
+        });
     }
 });
