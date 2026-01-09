@@ -27,7 +27,7 @@ def start():
             print("Navigation error:", e)
 
     print("🚀 Launching JINI interface...")
-    eel.start("index.html", mode="edge", size=(1000, 700), block=True)
+    eel.start("pages/index.html", mode="edge", size=(1000, 700), block=True)
 
 
 if __name__ == "__main__":
