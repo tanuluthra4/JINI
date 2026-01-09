@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         micBtn.addEventListener("click", () => {
-        goTo("mic.html");
+        goTo("pages/mic.html");
         });
 
 
