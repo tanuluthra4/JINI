@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("🤖 AI:", reply);
         status.innerHTML = "JINI: " + reply;
 
-        memory.push({ role: "assistant", text: reply });
+        memory.push({ role: "assistant", text: reply, time: Date.now()});
         saveMemory();
     }
 

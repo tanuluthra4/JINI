@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const t = promptEl.value.trim();
         if (!t) return;
         appendBubble(t, "user");
-        memory.push({ role: "user", text: t });
+        memory.push({ role: "user", text: t, time: Date.now() });
         saveMemory();
         promptEl.value = "";
         statusEl.textContent = "Thinking...";
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
         const reply = await askServer(t);
         appendBubble(reply, "assistant");
-        memory.push({ role: "assistant", text: reply });
+        memory.push({ role: "assistant", text: reply, time: Date.now() });
         saveMemory();
         processingSound.pause();
         processingSound.currentTime = 0;
@@ -143,13 +143,15 @@ document.addEventListener("DOMContentLoaded", function () {
         micRecognition.onresult = (e) => {
         const spoken = e.results[0][0].transcript;
         appendBubble(spoken, "user");
-        memory.push({ role: "user", text: spoken });
+        memory.push({ role: "user", text: spoken, time: Date.now() });
+        saveMemory()
         // send to server
         statusEl.textContent = "Thinking...";
         processingSound.play();
         askServer(spoken).then(reply => {
             appendBubble(reply, "assistant");
-            memory.push({ role: "assistant", text: reply });
+            memory.push({ role: "assistant", text: reply, time: Date.now() });
+            saveMemory()
             processingSound.pause();
             processingSound.currentTime = 0;
             speakAndAnimate(reply);
@@ -209,12 +211,14 @@ document.addEventListener("DOMContentLoaded", function () {
         cr.onresult = async (e) => {
         const cmd = e.results[0][0].transcript;
         appendBubble(cmd, "user");
-        memory.push({ role: "user", text: cmd });
+        memory.push({ role: "user", text: cmd, time: Date.now() });
+        saveMemory()
         statusEl.textContent = "Thinking...";
         processingSound.play();
         const reply = await askServer(cmd);
         appendBubble(reply, "assistant");
-        memory.push({ role: "assistant", text: reply });
+        memory.push({ role: "assistant", text: reply, time: Date.now() });
+        saveMemory()
         processingSound.pause();
         processingSound.currentTime = 0;
         speakAndAnimate(reply);
