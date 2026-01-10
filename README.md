@@ -1,8 +1,10 @@
-# JINI – AI-Based Voice-Controlled Desktop Assistant
+# JINI – AI-Based Voice-Controlled Desktop Assistant    
 
-JINI is an AI-powered desktop assistant that combines voice-based system control with text-based conversational AI.
-The project is designed to perform real-time desktop operations such as opening applications, playing media, and handling system commands, while also supporting natural language interaction through a chatbot interface.
-The system follows a hybrid command + AI architecture, ensuring reliable execution of system-level actions without sacrificing conversational intelligence.
+JINI is a voice-enabled AI desktop assistant that integrates real-time system automation with conversational AI.  
+It supports both command-based voice control and text-based AI interaction through a structured, safety-first architecture.   
+
+Unlike typical chatbot projects, JINI separates system-level command execution from AI-driven conversation, ensuring reliable automation without unintended actions.   
+The assistant maintains persistent conversational memory across sessions and supports multimodal interaction via a web-based interface.      
 
 ## Key Features
 
@@ -14,6 +16,18 @@ The system follows a hybrid command + AI architecture, ensuring reliable executi
 - 📁 Local database for contacts and system commands
 - 🌐 Web-based user interface
 - 🔐 Environment-based API key handling
+
+## Persistent Memory Model
+
+JINI maintains client-side conversational memory using a unified storage mechanism.  
+Both text-based chat (index.html) and voice-based interaction (mic.html) read from and write to the same memory store.  
+
+- Conversation history is persisted across reloads  
+- Messages are timestamped and rendered in chronological order  
+- Memory can be cleared explicitly by the user   
+- Ensures continuity between voice and text interactions    
+
+This design makes JINI behave like a single, consistent assistant rather than separate interaction modes.  
 
 ## System Architecture Overview
 
@@ -59,8 +73,19 @@ JINI/
 │   └── db.py             # Database setup and access
 │
 ├── frontend/
-│   ├── index.html        # Chatbot interface
-│   └── mic.html          # Voice interaction UI
+│   ├── html/
+│   │   ├── index.html      # Chatbot interface
+│   │   └── mic.html        # Voice interaction UI
+│   │
+│   ├── css/
+│   │   └── style.css       # Shared UI styles
+│   │
+│   ├── js/
+│   │   ├── app.js          # Chatbot logic + memory handling
+│   │   └── mic.js          # Microphone input + audio visualization
+│   │
+│   └── assets/
+│       └── favicon.png     # JINI application icon
 │
 ├── main.py               # Application entry point
 ├── jini.db               # SQLite database (generated locally)
@@ -82,8 +107,7 @@ Sensitive data is excluded from version control.
 
 1. Backend
 - Python
--  SQLite
-- Gemini API
+- SQLite
 - SpeechRecognition
 - Pyttsx3
 - PyAutoGUI
@@ -93,11 +117,6 @@ Sensitive data is excluded from version control.
 - CSS
 - JavaScript
 - Eel (Python–Web bridge)
-- APIs & Tools
-- Google Gemini AI
-- Picovoice (Wake word detection)
-- YouTube automation
-- Text-to-Speech engine (SAPI5)
 
 3. APIs & Tools
 - Google Gemini AI
@@ -169,3 +188,6 @@ J.C. Bose University of Science & Technology, YMCA, Faridabad.
 Tanu Luthra  
 B.Tech Computer Engineering  
 J.C. Bose University of Science & Technology, YMCA  
+
+## Demo
+A short screen recording demonstrating memory persistence, voice commands, and reload recovery is included in the repository.
