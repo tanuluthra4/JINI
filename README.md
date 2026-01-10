@@ -74,18 +74,18 @@ JINI/
 │
 ├── frontend/
 │   ├── html/
-│   │   ├── index.html      # Chatbot interface
-│   │   └── mic.html        # Voice interaction UI
+│   │   ├── index.html     # Chatbot interface
+│   │   └── mic.html       # Voice interaction UI
 │   │
 │   ├── css/
-│   │   └── style.css       # Shared UI styles
-│   │
+│   │   ├── main.css       # Chatbot UI styles
+│   │   └── mic.css        # Mic UI styles
 │   ├── js/
-│   │   ├── app.js          # Chatbot logic + memory handling
-│   │   └── mic.js          # Microphone input + audio visualization
+│   │   ├── app.js         # Chatbot logic + memory handling
+│   │   └── mic.js         # Microphone input + audio visualization
 │   │
 │   └── assets/
-│       └── favicon.png     # JINI application icon
+│       └── favicon.png    # JINI application icon
 │
 ├── main.py               # Application entry point
 ├── jini.db               # SQLite database (generated locally)
