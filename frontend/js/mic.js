@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const STORAGE_KEY = "jini_memory";
+    let memory = [];
     const micBtn = document.getElementById('micBtn');
     const backBtn = document.getElementById('backBtn');
     const status = document.getElementById('status');
@@ -8,6 +10,15 @@ document.addEventListener("DOMContentLoaded", function() {
     let analyser = null;
     let source = null;
     let dataArray = null;
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        memory = JSON.parse(saved);
+    }
+
+    function saveMemory() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(memory));
+    }
 
     async function initMic() {
         if (audioCtx) return;
@@ -61,6 +72,9 @@ document.addEventListener("DOMContentLoaded", function() {
     function showResponse(reply) {
         console.log("🤖 AI:", reply);
         status.innerHTML = "JINI: " + reply;
+
+        memory.push({ role: "assistant", text: reply });
+        saveMemory();
     }
 
     micBtn.addEventListener("click", async () => {
