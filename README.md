@@ -132,25 +132,25 @@ It is planned to be enabled in future versions for hands-free interaction.
 
 ## Installation & Setup
 
-1. Clone Repository
-git clone https://github.com/tanuluthra4/JINI.git
-cd JINI
+1. Clone Repository  
+git clone https://github.com/tanuluthra4/JINI.git  
+cd JINI  
 
-2. Create Virtual Environment
-python -m venv envjini
-envjini\Scripts\activate
+2. Create Virtual Environment   
+python -m venv envjini  
+envjini\Scripts\activate  
 
-3. Install Dependencies
-pip install -r requirements.txt
+3. Install Dependencies  
+pip install -r requirements.txt  
 
-4. Configure Environment Variables
-Create a .env file:
-GEMINI_API_KEY=your_api_key
-PICOVOICE_API_KEY=your_api_key
-ASSISTANT_NAME=JINI
+4. Configure Environment Variables  
+Create a .env file:  
+GEMINI_API_KEY=your_api_key  
+PICOVOICE_API_KEY=your_api_key  
+ASSISTANT_NAME=JINI  
 
-5. Run Application
-python main.py
+5. Run Application   
+python main.py  
 
 ## Design Decisions
 
