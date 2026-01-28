@@ -1,80 +1,56 @@
 import pyttsx3
 import speech_recognition as sr
 import eel
-from backend import feature
+from backend.feature import chatBot
 from backend.helper import speak
-
-def takecommand():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening....")
-        eel.DisplayMessage("Listening....")
-        r.pause_threshold = 1
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source, timeout=10, phrase_time_limit=8)
-
-    try:
-        print("Recognizing....")
-        eel.DisplayMessage("Listening....")
-        query = r.recognize_google(audio, language='en-US')
-        print(F"User said: {query}\n")
-        eel.DisplayMessage(query)
-        return query.lower()
-
-    except Exception as e:
-        print(f"Error : {e}")
-        print("Sorry, I didn't catch that")
-        speak("Sorry, I didn't catch that")
-        return None
+from backend.handlers.system_handler import open_application
+from backend.handlers.communication_handler import handle_communication 
+from backend.handlers.media_handler import play_media 
+from backend.intent import classify_intent
+from backend.input.speech import takecommand
 
 @eel.expose
 def takeAllCommands(message=None):
+    '''
+    Processes user input (voice or text) and routes to the correct handler
+    '''
+
+    # Step 1: Get the query
     if message is None:
         query = takecommand()
         if not query:
             return
-        print(query)
-        eel.senderText(query)
 
     else:
         query = message.lower().strip()
-        print(f"Message received: {query}")
-        eel.senderText(query)
+        
+    print(f"Message received: {query}")
+    eel.senderText(query)
 
+    # Step 2: Classify intent
+    intent, _ = classify_intent(query)
+
+    # Step 3: Route Based on intent
     try:
-        if query:
-            if "open" in query:
-                feature.OpenCommand(query)
-            elif "message" in query or "call" in query or "video call" in query:
-                from backend.feature import findContact, whatsApp
-                flag = ""
-                Phone, name = findContact(query)
-                if Phone != 0:
-                    if "message" in query:
-                        flag = 'message'
-                        speak("What message to send?")
-                        query = takecommand()  # Ask for the message text
-                    elif "call" in query:
-                        flag = 'call'
-                    else:
-                        flag = 'video call'
-                    whatsApp(Phone, query, flag, name)
-            elif "on youtube" in query or "play" in query:
-                from backend.feature import PlayYoutube
-                PlayYoutube(query)
+        if intent == "SYSTEM":
+            open_application(query)
+
+        elif intent == "COMMUNICATION":
+            handle_communication(query)
+
+        elif intent == "MEDIA":
+            play_media(query)
+
+        else: # AI fallback
+            response = chatBot(query)
+            if response:
+                speak(response)
+                eel.DisplayMessage(response)
             else:
-                from backend.feature import chatBot
-                response = chatBot(query)
-                if response:
-                    speak(response)
-                    eel.DisplayMessage(response)
-                else:
-                    speak("I’m here, but didn’t get that.")
-        else:   
-            speak("No command was given.")
+                speak("I'm here, but didn't get that")
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Error while processing command: {e}")
         speak("Sorry, something went wrong.")
     
     eel.ShowHood()
