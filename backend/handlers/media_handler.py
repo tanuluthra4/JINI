@@ -1,5 +1,6 @@
-from backend.helper import speak
-from backend.feature import PlayYoutube
+from backend.helper import speak, extract_yt_term
+import pywhatkit as kit
+import webbrowser
 
 def play_media(query: str) -> bool:
     '''
@@ -10,7 +11,14 @@ def play_media(query: str) -> bool:
     '''
     try: 
         if "youtube" in query or "play" in query:
-            PlayYoutube(query)
+            search_term = extract_yt_term(query)
+            speak("Playing " + search_term + " on YouTube")
+        try:
+            kit.playonyt(search_term)
+        except Exception as e:
+            print("Error playing YouTube:", e)
+            speak("Having trouble playing on YouTube. Opening in browser instead.")
+            webbrowser.open(f"https://www.youtube.com/results?search_query={search_term}")
             return True 
         
         speak("I couldn't find any media to play.")
