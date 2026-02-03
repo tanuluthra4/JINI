@@ -8,39 +8,58 @@ The assistant maintains persistent conversational memory across sessions and sup
 
 ## Key Features
 
-- 🎤 Voice-controlled desktop commands
-- 💬 Text-based conversational chatbot
-- 🗣️ Text-to-speech responses
-- 🧠 AI-powered responses using Gemini API
-- 🖥️ Application launching and system automation
-- 📁 Local database for contacts and system commands
-- 🌐 Web-based user interface
-- 🔐 Environment-based API key handling
+- 🎤 Voice-controlled desktop commands – Open apps, launch URLs, send messages, make calls
+- 💬 Text-based conversational AI – Handles queries, knowledge retrieval, and casual conversation
+- 🗣️ Text-to-speech responses – Unified voice output for both AI and system responses
+- 🧠 AI-powered responses – Gemini API primary, HugChat fallback for resilience
+- 🖥️ System automation – Launch apps, play media, WhatsApp communication
+- 📁 Local SQLite database – Stores contacts and system commands safely
+- 🌐 Web-based frontend – Supports text input (index.html) and voice input (mic.html)
+- 🔐 Environment-based API key handling – No sensitive data committed
 
 ## Persistent Memory Model
 
-JINI maintains client-side conversational memory using a unified storage mechanism.  
-Both text-based chat (index.html) and voice-based interaction (mic.html) read from and write to the same memory store.  
+JINI maintains unified conversational memory across both text and voice interactions:
 
-- Conversation history is persisted across reloads  
-- Messages are timestamped and rendered in chronological order  
-- Memory can be cleared explicitly by the user   
-- Ensures continuity between voice and text interactions    
+- Shared storage: All messages, from both index.html and mic.html, are persisted in the same memory store
+- Chronological history: Messages are timestamped and displayed in order
+- Reload continuity: Conversation persists across page reloads and app restarts
+- Explicit clearing: Users can clear memory manually
+- Safety-first separation: Voice commands trigger handlers, but text inputs never execute system-level actions
 
-This design makes JINI behave like a single, consistent assistant rather than separate interaction modes.  
+This ensures JINI behaves as one consistent assistant, not two separate interfaces.
+
+## AI vs Command Handling 
+
+1. Voice Commands (Command Mode):
+
+- Classified first using intent.py
+- Routed to appropriate handler:
+- SYSTEM: system_handler.py → Opens apps, launches URLs
+- COMMUNICATION: communication_handler.py → WhatsApp messages, calls, video calls
+- MEDIA: media_handler.py → YouTube/media playback
+
+2. Text Inputs (Chatbot Mode):
+
+- Handled only by feature.py
+- Uses Gemini API → HugChat fallback
+- No system command execution to ensure security
+
+3. Design Decision:
+Voice commands and AI queries are intentionally separated to prevent accidental system actions and maintain reliability.
 
 ## System Architecture Overview
 
 JINI uses two independent input pipelines, intentionally designed to handle different interaction types.
 
 1. Text Input Pipeline (Chatbot Mode)
-Text input is processed exclusively through the Gemini AI model.
+Handles text-based interaction exclusively through AI. This pipeline does not trigger system commands, ensuring safe responses.
 Purpose:
 - General conversation
 - Knowledge-based queries
 - AI assistance
 Flow:
-Text Input → Gemini AI → Text Response → Voice Output
+Text Input → feature.py (Gemini AI + HugChat fallback) → Voice & Text Output
 Text input does not trigger system commands to avoid ambiguity and unintended execution.
 
 2. Voice Input Pipeline (Command Mode)
@@ -51,12 +70,18 @@ Purpose:
 - Call or message stored contacts
 - Perform system-level actions
 Flow:
-Voice Input
- → Speech-to-Text
- → Command Classification
 ```text
-    ├─ System Command → Local Execution
-    └─ General Query → Gemini AI 
+    Microphone Input
+        ↓
+    Speech-to-Text (input/speech.py)
+        ↓
+    Intent Classification (intent.py)
+        ├─ SYSTEM → system_handler.py → Open apps / URLs
+        ├─ COMMUNICATION → communication_handler.py → WhatsApp / Calls / Messages
+        ├─ MEDIA → media_handler.py → YouTube / Media Playback
+        └─ AI → feature.py → Conversational AI
+        ↓
+    Text-to-Speech Output (helper.py)
 ```
 This separation ensures accuracy, security, and reliability in system control.
 
@@ -66,31 +91,36 @@ This separation ensures accuracy, security, and reliability in system control.
 JINI/
 │
 ├── backend/
-│   ├── command.py        # Command interpretation and routing
-│   ├── feature.py        # System-level features and actions
-│   ├── helper.py         # Utility and helper functions
-│   ├── conf.py           # Configuration (API keys, assistant name)
-│   └── db.py             # Database setup and access
+│   ├── command.py                    # Command router (routes input to correct handler)
+│   ├── feature.py                    # AI chatbot only (Gemini + HugChat fallback)
+│   ├── helper.py                     # Utility functions (speak, extract words, etc.)
+│   ├── conf.py                       # Configuration (API keys, assistant name)
+│   ├── db.py                         # Database setup and access
+│   ├── intent.py                     # Input classification: SYSTEM, COMMUNICATION, MEDIA, AI
+│   ├── handlers/
+│   │   ├── system_handler.py         # System commands (open apps, launch URLs)
+│   │   ├── communication_handler.py  # WhatsApp, calls, messages
+│   │   └── media_handler.py          # YouTube/media playback
+│   └── input/
+│       └── speech.py                 # Speech-to-text logic
 │
 ├── frontend/
 │   ├── html/
-│   │   ├── index.html     # Chatbot interface
-│   │   └── mic.html       # Voice interaction UI
-│   │
+│   │   ├── index.html                 # Chatbot interface (text input)
+│   │   └── mic.html                   # Voice interaction UI
 │   ├── css/
-│   │   ├── main.css       # Chatbot UI styles
-│   │   └── mic.css        # Mic UI styles
+│   │   ├── main.css                   # Chatbot UI styles
+│   │   └── mic.css                    # Mic UI styles
 │   ├── js/
-│   │   ├── app.js         # Chatbot logic + memory handling
-│   │   └── mic.js         # Microphone input + audio visualization
-│   │
+│   │   ├── app.js                     # Chatbot logic + memory handling
+│   │   └── mic.js                     # Microphone input + audio visualization
 │   └── assets/
-│       └── favicon.png    # JINI application icon
+│       └── favicon.png                # JINI application icon
 │
-├── main.py               # Application entry point
-├── jini.db               # SQLite database (generated locally)
-├── requirements.txt      # Python dependencies
-├── .env                  # Environment variables (not committed)
+├── main.py                             # Application entry point (launches Eel UI)
+├── jini.db                             # SQLite database (generated locally)
+├── requirements.txt                    # Python dependencies
+├── .env                                # Environment variables (not committed)
 ├── .gitignore
 └── README.md
 ```
@@ -124,12 +154,6 @@ Sensitive data is excluded from version control.
 - YouTube automation
 - Text-to-Speech engine (SAPI5)
 
-## Wake Word Detection (Planned)
-
-The system includes preliminary implementation for wake-word detection using Picovoice Porcupine.
-This feature is currently disabled in the final build to avoid continuous microphone usage and system overhead.
-It is planned to be enabled in future versions for hands-free interaction.
-
 ## Installation & Setup
 
 1. Clone Repository  
@@ -145,8 +169,7 @@ pip install -r requirements.txt
 
 4. Configure Environment Variables  
 Create a .env file:  
-GEMINI_API_KEY=your_api_key  
-PICOVOICE_API_KEY=your_api_key  
+GEMINI_API_KEY=your_api_key
 ASSISTANT_NAME=JINI  
 
 5. Run Application   
@@ -154,11 +177,12 @@ python main.py
 
 ## Design Decisions
 
-- Text and voice inputs are intentionally separated
-- Voice commands are classified before execution
-- Text input is restricted to AI responses only
-- Local database ensures fast access and offline capability
-- Modular backend improves maintainability and scalability
+- Separate input pipelines: Voice commands trigger handlers, text input goes only to AI
+- Command classification: All voice commands are classified first to avoid unintended actions
+- AI fallback: Text inputs handled only by feature.py ensures system safety
+- Persistent memory: Unified storage across text and voice modes for consistency
+- Modular backend: Handlers for system, communication, and media make code maintainable
+- Local database: Ensures offline capability for contacts and system commands
 
 These choices were made to ensure robustness, clarity, and system safety.
 
