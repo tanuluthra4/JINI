@@ -1,4 +1,3 @@
-import pyttsx3
 import speech_recognition as sr
 import eel
 from backend.feature import chatBot
@@ -79,19 +78,8 @@ def mic_input():
         print(f"🗣️ You said: {text}")
         eel.showResponse(f"🗣️ You said: {text}")
 
-        if any(word in text.lower() for word in ["open", "call", "message", "video", "youtube", "play"]):
-            takeAllCommands(text)  # Executes feature actions directly
-            return
-        
-        # Get AI response
-        response = get_ai_response(text)
-        print("🤖 JINI:", response)
-
-        # Send to frontend
-        eel.showResponse(response)
-
-        # Speak it
-        speak(response)
+        # Send everything to router 
+        takeAllCommands(text)
 
     except sr.UnknownValueError:
         print("Could not understand audio")
