@@ -25,14 +25,11 @@ def route_query(query):
     
     if handler: 
         handler(query)
+        return None
 
     else: # AI fallback
         response = chatBot(query)
-        if response:
-            speak(response)
-            eel.DisplayMessage(response)
-        else:
-            speak("I'm here, but didn't get that")
+        return response
 
 @eel.expose
 def takeAllCommands(message=None):
@@ -53,7 +50,11 @@ def takeAllCommands(message=None):
     eel.senderText(query)
 
     try:
-        route_query(query)
+        response = route_query(query)
+
+        if response: 
+            speak(response)
+            eel.DisplayMessage(response)
 
     except Exception as e:
         logger.error(f"Error while processing command", exc_info=True)
