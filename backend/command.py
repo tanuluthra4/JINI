@@ -12,6 +12,28 @@ from backend.input.speech import takecommand
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def route_query(query):
+    intent, _ = classify_intent(query)
+
+    handlers = {
+            "SYSTEM": open_application,
+            "COMMUNICATION": handle_communication,
+            "MEDIA": play_media
+        }
+
+    handler = handlers.get(intent)
+    
+    if handler: 
+        handler(query)
+
+    else: # AI fallback
+        response = chatBot(query)
+        if response:
+            speak(response)
+            eel.DisplayMessage(response)
+        else:
+            speak("I'm here, but didn't get that")
+
 @eel.expose
 def takeAllCommands(message=None):
     '''
@@ -27,32 +49,11 @@ def takeAllCommands(message=None):
     else:
         query = message.lower().strip()
         
-    print(f"Message received: {query}")
+    logger.info(f"Message received: {query}")
     eel.senderText(query)
 
-    # Step 2: Classify intent
-    intent, _ = classify_intent(query)
-
-    # Step 3: Route Based on intent
     try:
-        handlers = {
-            "SYSTEM": open_application,
-            "COMMUNICATION": handle_communication,
-            "MEDIA": play_media
-        }
-
-        handler = handlers.get(intent)
-        
-        if handler: 
-            handler(query)
-
-        else: # AI fallback
-            response = chatBot(query)
-            if response:
-                speak(response)
-                eel.DisplayMessage(response)
-            else:
-                speak("I'm here, but didn't get that")
+        route_query(query)
 
     except Exception as e:
         logger.error(f"Error while processing command", exc_info=True)
