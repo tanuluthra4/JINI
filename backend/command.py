@@ -8,24 +8,26 @@ from backend.handlers.communication_handler import handle_communication
 from backend.handlers.media_handler import play_media 
 from backend.intent import classify_intent
 from backend.input.speech import takecommand
+from backend.handlers.weather_handler import handle_weather
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def route_query(query):
-    intent, _ = classify_intent(query)
+    result = classify_intent(query)
+    intent = result.intent
 
     handlers = {
             "SYSTEM": open_application,
             "COMMUNICATION": handle_communication,
-            "MEDIA": play_media
+            "MEDIA": play_media,
+            "WEATHER": handle_weather
         }
 
     handler = handlers.get(intent)
     
     if handler: 
-        handler(query)
-        return None
+        return handler(result)
 
     else: # AI fallback
         response = chatBot(query)

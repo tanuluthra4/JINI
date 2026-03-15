@@ -1,34 +1,39 @@
 from backend.intent import classify_intent
 
 def test_system_intent():
-    intent, _ = classify_intent("start chrome")
-    assert intent == "SYSTEM"
+    result = classify_intent("start chrome")
+    assert result.intent == "SYSTEM"
 
 def test_communication_intent():
-    intent, _ = classify_intent("video call mom")
-    assert intent == "COMMUNICATION"
+    result = classify_intent("video call mom")
+    assert result.intent == "COMMUNICATION"
 
 def test_media_intent():
-    intent, _ = classify_intent("play music")
-    assert intent == "MEDIA"
+    result = classify_intent("play music")
+    assert result.intent == "MEDIA"
 
 def test_ai_fallback():
-    intent, _ = classify_intent("what is quantum computing?")
-    assert intent == "AI"
+    result = classify_intent("what is quantum computing?")
+    assert result.intent == "AI"
 
 def test_mixed_query_priority():
-    intent, _ = classify_intent("open youtube and play music")
+    result = classify_intent("open youtube and play music")
     # define expected behavior clearly 
-    assert intent == "SYSTEM"
+    assert result.intent == "SYSTEM"
 
 def test_uppercase_input():
-    intent, _ = classify_intent("START CHROME")
-    assert intent == "SYSTEM"
+    result = classify_intent("START CHROME")
+    assert result.intent == "SYSTEM"
 
 def test_extra_spaces():
-    intent, _ = classify_intent("   play    music   ")
-    assert intent == "MEDIA"
+    result = classify_intent("   play    music   ")
+    assert result.intent == "MEDIA"
 
 def test_empty_string():
-    intent, _ = classify_intent("")
-    assert intent == "AI"
+    result = classify_intent("")
+    assert result.intent == "AI"
+
+def test_weather_intent():
+    result = classify_intent("weather in delhi")
+    assert result.intent == "WEATHER"
+    assert result.entities["city"] == "delhi"
