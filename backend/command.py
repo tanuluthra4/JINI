@@ -6,7 +6,7 @@ from backend.helper import speak
 from backend.handlers.system_handler import open_application
 from backend.handlers.communication_handler import handle_communication 
 from backend.handlers.media_handler import play_media 
-from backend.intent import classify_intent
+from backend.intents.intent import classify_intent
 from backend.input.speech import takecommand
 from backend.handlers.weather_handler import handle_weather
 

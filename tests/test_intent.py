@@ -1,4 +1,4 @@
-from backend.intent import classify_intent
+from backend.intents.intent import classify_intent
 
 def test_system_intent():
     result = classify_intent("start chrome")
