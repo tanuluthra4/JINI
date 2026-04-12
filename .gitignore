@@ -14,3 +14,6 @@ backend/conf.py
 # OS files
 .DS_Store
 Thumbs.db
+
+# Memory / runtime data
+backend/memory/data.json

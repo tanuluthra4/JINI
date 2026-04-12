@@ -9,12 +9,27 @@ def chatBot(query):
     user_input = query.lower()
     response_text = ""
 
+    if "done" in user_input:
+        memory = load_memory()
+
+        try:
+            task_num = int(user_input.split()[-1]) - 1
+            memory["tasks"][task_num]["done"] = True
+            save_memory(memory)
+            return f"Task {task_num+1} marked as completed."
+        except:
+            return "Invalid task number."
+
     if "continue" in user_input or "next" in user_input:
             memory = load_memory()
+
             if isinstance(memory, dict) and "tasks" in memory:
-                response_text += "Continuing from previous tasks:\n"
-                for idx, task in enumerate(memory["tasks"]):
-                    response_text += f"Task {idx+1}: {task}\n"
+                response_text = f"Continuing: {memory['goal']}\n\n"
+
+                for idx, item in enumerate(memory["tasks"]):
+                    if not item["done"]:
+                        response_text += f"Task {idx+1}: {item['task']}\n"
+
                 return response_text
             else:
                 return "No previous plan found. Please ask for a new plan first.\n"
@@ -25,7 +40,12 @@ def chatBot(query):
         plan = generate_plan(query)
 
         if isinstance(plan, dict) and "tasks" in plan:
-            save_memory(plan)
+            structured_tasks = [{"task": t, "done": False} for t in plan["tasks"]]
+
+            save_memory({
+                "goal": plan["goal"],
+                "tasks": structured_tasks
+            })
         
         if isinstance(plan, dict) and "error" not in plan:
             response_text += f"Here's the plan to achieve your goal: {plan['goal']}\n\n"
