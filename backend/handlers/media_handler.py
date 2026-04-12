@@ -1,5 +1,4 @@
 from backend.helper import speak, extract_yt_term
-import pywhatkit as kit
 import webbrowser
 
 def play_media(query: str) -> bool:
@@ -10,6 +9,8 @@ def play_media(query: str) -> bool:
     Returns True if media was played, else False 
     '''
     try: 
+        import pywhatkit as kit
+        
         if "youtube" in query or "play" in query:
             search_term = extract_yt_term(query)
             speak("Playing " + search_term + " on YouTube")

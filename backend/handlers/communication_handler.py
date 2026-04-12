@@ -2,7 +2,6 @@ from backend.conf import ASSISTANT_NAME
 from backend.db import get_db_connection
 from backend.helper import speak, remove_words
 from backend.input.speech import takecommand
-import pywhatkit as kit
 import subprocess, datetime
 
 conn, cursor = get_db_connection()
@@ -41,6 +40,7 @@ def handle_communication(query: str) -> bool:
     - WhatsApp video call 
     Returns True if action executed, else False 
     '''
+    import pywhatkit as kit
 
     try: 
         phone, name = findContact(query)
