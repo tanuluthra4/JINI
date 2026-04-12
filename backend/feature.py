@@ -3,15 +3,29 @@ from backend.conf import GEMINI_API_KEY
 import google.generativeai as genai
 from backend.agents.planner import generate_plan
 from backend.agents.executor import execute_task
+from backend.memory.memory import save_memory, load_memory
 
 def chatBot(query):
     user_input = query.lower()
     response_text = ""
 
+    if "continue" in user_input or "next" in user_input:
+            memory = load_memory()
+            if isinstance(memory, dict) and "tasks" in memory:
+                response_text += "Continuing from previous tasks:\n"
+                for idx, task in enumerate(memory["tasks"]):
+                    response_text += f"Task {idx+1}: {task}\n"
+                return response_text
+            else:
+                return "No previous plan found. Please ask for a new plan first.\n"
+
     trigger_words = ["build", "create", "prepare", "learn", "make"]
 
     if any(word in user_input for word in trigger_words):
         plan = generate_plan(query)
+
+        if isinstance(plan, dict) and "tasks" in plan:
+            save_memory(plan)
         
         if isinstance(plan, dict) and "error" not in plan:
             response_text += f"Here's the plan to achieve your goal: {plan['goal']}\n\n"
