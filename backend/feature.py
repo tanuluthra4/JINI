@@ -10,6 +10,35 @@ def chatBot(query):
     user_input = query.lower()
     response_text = ""
 
+    if "fix" in user_input or "improve" in user_input or "implement" in user_input:
+        memory = load_memory()
+
+        if not memory:
+            return "No previous plan found. Please ask for a new plan first.\n"
+        
+        prompt = f"""You are a strict senior engineer reviewing a student's implementation of a task.
+Context:
+{memory}
+
+User request:
+{query}
+
+Give:
+- Step-by-step implementation plan
+- Code-level suggestions
+- File-level changes (where to modify)
+
+Be practical and specific.
+"""
+        
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-2.5-flash")
+
+        response = model.generate_content(prompt)
+
+        return response.text.strip()
+
+
     if "github.com" in user_input:
         from backend.tools.github_tool import get_repo_info, analyze_repo
 
@@ -30,6 +59,11 @@ def chatBot(query):
         else:
             print(f"Repo Info Error: {repo_info['error']}")
             response_text += "Sorry, I couldn't fetch the repository information.\n"
+        
+        save_memory({
+            "type": "repo_analysis",
+            "data": analysis
+        })
 
         return response_text
 
