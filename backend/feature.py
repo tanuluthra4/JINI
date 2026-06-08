@@ -4,11 +4,23 @@ import google.generativeai as genai
 from backend.agents.planner import generate_plan
 from backend.agents.executor import execute_task
 from backend.memory.memory import save_memory, load_memory
+from backend.agents.coding_mentor import explain_problem
 import re
+
+coding_words = [
+    "solve",
+    "leetcode",
+    "coding problem",
+    "algorithm",
+    "break down"
+]
 
 def chatBot(query):
     user_input = query.lower()
     response_text = ""
+
+    if any(word in user_input for word in coding_words):
+        return explain_problem(query)
 
     if "fix" in user_input or "improve" in user_input or "implement" in user_input:
         memory = load_memory()
